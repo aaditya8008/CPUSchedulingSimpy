@@ -1,0 +1,12 @@
+#Start
+
+git fetch origin
+git merge origin/main     
+
+
+
+
+#Changes 
+git add -A
+git commit -m"third"      
+git push origin main      
