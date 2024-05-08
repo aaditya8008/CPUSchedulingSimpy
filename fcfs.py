@@ -1,38 +1,39 @@
 from process import Process
 import simpy
+
 class FCFS:
- 
- def  __init__(self):  
-    self.processList[Process]=[]
-    self.tq=16
+    def __init__(self):  
+        self.processList = []  
+        self.tq = 16
 
- 
- def schedule(self,env,processes:Process):
-   
-   self.processList.append(processes)
-   self.processList.sort(key=lambda x:x.at)
+    def schedule(self, env, processes: Process):
+        self.processList.append(processes)
+        self.processList.sort(key=lambda x: x.at)  
 
-   current_time=env.now
+        current_time = env.now
 
-   for p in self.processList:
-    if(p.completed!=True):
-     if current_time<p.at:
-       current_time=p.at
+        for p in self.processList:
+            
+            if not p.completed:
+                if current_time < p.at:
+                    current_time = p.at
+                else:
+                    current_time += p.bt
+                    p.tat = current_time - p.at
+                    p.wt = p.tat - p.bt
+                    p.completed = True
 
-     else:
-       current_time+=p.bt
-       p.tat=current_time=p.ar
-       p.wt=p.tat-p.bt
-       p.completed=True
-     yield env.timeout(p.br)
+                yield env.timeout(p.bt)
 
-   return self.processList
- 
+        return self.processList
 
- def state(self):
-    print("Pid\tBt\tAt\tTat\tWt\tCompleted")
-    for p in self.processes:
-            print(f"{p.pid}\t{p.bt}\t{p.at}\t{p.tat}\t{p.wt}\t{p.complete}")
+    def state(self):
+        
+        print("Pid\tBt\tAt\tTat\tWt\tCompleted")
+
+        for p in self.processList:
+            print(f"{p.pid}\t{p.bt}\t{p.at}\t{p.tat}\t{p.wt}\t{p.completed}")
+
      
 
        
