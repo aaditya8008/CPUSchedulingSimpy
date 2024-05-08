@@ -8,3 +8,5 @@ class Process:
         self.timeQuantum=0
         self.priority=0
         self.queue="None"
+        self.add=False
+        self.complete=False
