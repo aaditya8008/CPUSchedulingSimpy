@@ -27,7 +27,7 @@ class sjf_preemptive:
             yield self.env.timeout(1)
             self.current_time+=1
 
-            while self.processlist and self.processlist[0].at<=self.current_time:
+            while self.processlist and self.processlist[0].at<=self.current_time and processes[0].completed!=True:
                new_process=self.process.pop(0)
 
                if new_process.bt<current_process.bt:
@@ -40,12 +40,12 @@ class sjf_preemptive:
                
                current_process.bt-=1
                ready_queue.apppend(current_process)
-
-
+            
             else:
+               processes[0].completed=True
                current_process.tat=self.current_time-current_process.at
                current_process.wt = current_process.tat - current_process.original_bt
                print(f"Process {current_process.id} completed at time {self.current_time}")
-               
+
       for p in self.processlist:
             p.tat = p.original_bt + p.wt
