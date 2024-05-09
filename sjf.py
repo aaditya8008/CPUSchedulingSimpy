@@ -2,7 +2,7 @@ import simpy
 from process import Process
 class sjf_nonpreemtive:
     def __init__(self):
-      self.processlist[Process]=[]
+      self.processlist=[]
       tq=12
     def schedule(self,env, processes: Process):
         ready_queue = []
