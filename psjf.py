@@ -1,16 +1,15 @@
 import simpy
 from process import Process
 class sjf_preemptive:
-   def __init__(self,env):
-      self.env=env
+   def __init__(self):
       self.processlist[Process]=[]
       tq=4
       
       
-   def schedule(self,processes:Process):
+   def schedule(self,env,processes:Process):
       ready_queue=[]
       self.processlist.append(processes)
-      current_time=self.env.now
+      current_time=env.now
       self.processlist.sort(key=lambda x:x.at)
 
       while self.processlist or ready_queue:
@@ -24,7 +23,7 @@ class sjf_preemptive:
 
          if ready_queue:
             current_process=ready_queue.pop(0)
-            yield self.env.timeout(1)
+            yield env.timeout(1)
             self.current_time+=1
 
             while self.processlist and self.processlist[0].at<=self.current_time and processes[0].completed!=True:
