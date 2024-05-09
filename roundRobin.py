@@ -1,27 +1,29 @@
+from process import Process
+import simpy
+
 class RoundRobin:
-    def __init__(self, tq=2):
-        self.processList = []
-        self.tq = tq
+    def __init__(self):  
+        self.processList = []  
+        self.tq = 8
 
-    def schedule(self, env):
-        processes = self.processList
-        current_time = env.now
-
-        while processes:
-            current_process = processes.pop(0)
-            if current_process.bt > 0:
-                if current_process.bt > self.tq:
-                    yield env.timeout(self.tq)
-                    current_time += self.tq
-                    current_process.bt -= self.tq
-                    processes.append(current_process)
-                else:
-                    yield env.timeout(current_process.bt)
-                    current_time += current_process.bt
-                    current_process.completed = True
-                    current_process.tat = current_time - current_process.at
-                    current_process.wt = current_process.tat - current_process.bt
-                    print(f"Process {current_process.pid} completed at time {current_time}")
+    def schedule(self, env, processes: Process):
+        self.processList.append(processes)
+        current_time = env.now  
+        
+        while self.processList:
+            for process in self.processList:
+                if process.at <= current_time and not process.completed:
+                    if process.bt > self.tq:
+                        current_time += self.tq
+                        process.bt -= self.tq
+                    else:
+                        current_time += process.bt
+                        process.tat = current_time - process.at
+                        process.wt = process.tat - process.bt
+                        process.completed = True
+                    yield env.timeout(process.bt)
+        
+        return self.processList
 
     def state(self):
         print("Pid\tBt\tAt\tTat\tWt\tCompleted")
