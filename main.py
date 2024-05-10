@@ -16,7 +16,7 @@ def generate_processes(num_processes):
     return processes
 
 def main():
-    num_processes = random.randint(0,1000) # Number of processes
+    num_processes = random.randint(0,20) # Number of processes
     processes = generate_processes(num_processes)
     env = simpy.Environment()
 
@@ -27,7 +27,7 @@ def main():
 
     # First level queue: Preemptive SJF for real-time processes
     psjf_scheduler = PreemptiveSJF(env, real_time_processes.copy())
-    env.process(psjf_scheduler.run())
+    
 
     # Second level queue: Round Robin for interactive processes
     round_robin_scheduler = RoundRobin(env, interactive_processes.copy(), quantum=2)
@@ -38,9 +38,22 @@ def main():
    
 
     # Fourth level queue: FCFS for batch processes
-    fcfs_scheduler = FCFS(env, batch_processes)
-
-
+    fcfs_scheduler = FCFS(env, batch_processes.copy())
+     
+    print("\nIndividual  Process Non-Modified Results:")
+    print("Level\tPid\tBt\tAt\tTat\tWt")
+    for p in processes:
+        level = ""
+        if p in real_time_processes:
+            level = "Real-Time"
+        elif p in interactive_processes:
+            level = "Interactive"
+        elif p in system_processes:
+            level = "System"
+        elif p in batch_processes:
+            level = "Batch"
+        print(f"{level.ljust(12)}{p.pid}\t{p.bt}\t{p.at}\t{p.tat}\t{max(0, p.wt)}")
+     
     env.process(psjf_scheduler.run())
     env.process(round_robin_scheduler.run())
     env.process(sjf_scheduler.run())
@@ -49,7 +62,7 @@ def main():
     env.run()
 
     # Print results for all processes
-    print("\nIndividual Process Results:")
+    print("\nIndividual  Process Modified Results:")
     print("Level\tPid\tBt\tAt\tTat\tWt")
     for p in processes:
         level = ""
