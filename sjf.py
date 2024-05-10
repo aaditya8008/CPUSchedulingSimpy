@@ -1,29 +1,23 @@
+# nonpreemptive_sjf.py
 import simpy
-from process import Process
-class sjf_nonpreemtive:
-    def __init__(self):
-      self.processlist=[]
-      tq=12
-    def schedule(self,env, processes: Process):
-        ready_queue = []
-        self.processlist.append(processes)
-        current_time = env.now
-        self.processlist.sort(key=lambda x: x.at)
-        while self.processlist or ready_queue:
-            if not ready_queue:
-                current_time = self.processlist[0].at
-            while self.processlist and self.processlist[0].at <= current_time and processes[0].completed!=True:
-                ready_queue.append(self.processlist.pop(0))
-            ready_queue.sort(key=lambda x: x.bt)
 
-            if ready_queue:
-                current_process = ready_queue.pop(0)
-                yield env.timeout(current_process.bt)  
-                current_time += current_process.bt
-                processes[0].completed=True
-                current_process.tat = current_time - current_process.at
-                current_process.wt = current_process.tat - current_process.original_bt
-                print(f"Process {current_process.id} completed at time {current_time}")
+class NonPreemptiveSJF:
+    def __init__(self, env, processes):
+        self.env = env
+        self.processes = processes
+        self.current_time = 0
 
-        for p in self.processlist:
-            p.tat = p.original_bt + p.wt
+    def run(self):
+        self.processes.sort(key=lambda x: x.at)
+        while self.processes:
+            available_processes = [p for p in self.processes if p.at <= self.current_time]
+            if available_processes:
+                shortest_job = min(available_processes, key=lambda x: x.bt)
+                self.current_time += shortest_job.bt
+                shortest_job.tat = self.current_time - shortest_job.at
+                shortest_job.wt = shortest_job.tat - shortest_job.bt
+                self.processes.remove(shortest_job)
+                yield self.env.timeout(shortest_job.bt)
+            else:
+                self.current_time = min(p.at for p in self.processes)
+

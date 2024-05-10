@@ -1,31 +1,30 @@
-from process import Process
+# round_robin.py
 import simpy
 
 class RoundRobin:
-    def __init__(self):  
-        self.processList = []  
-        self.tq = 8
+    def __init__(self, env, processes, quantum):
+        self.env = env
+        self.processes = processes
+        self.quantum = quantum
+        self.current_time = 0
 
-    def schedule(self, env, processes: Process):
-        self.processList.append(processes)
-        current_time = env.now  
-        
-        while self.processList:
-            for process in self.processList:
-                if process.at <= current_time and not process.completed:
-                    if process.bt > self.tq:
-                        current_time += self.tq
-                        process.bt -= self.tq
-                    else:
-                        current_time += process.bt
-                        process.tat = current_time - process.at
-                        process.wt = process.tat - process.bt
-                        process.completed = True
-                    yield env.timeout(process.bt)
-        
-        return self.processList
+    def run(self):
+        ready_queue = []
+        while self.processes or ready_queue:
+            while self.processes and self.processes[0].at <= self.current_time:
+                ready_queue.append(self.processes.pop(0))
+            if ready_queue:
+                process = ready_queue.pop(0)
+                if process.bt > self.quantum:
+                    self.current_time += self.quantum
+                    process.bt -= self.quantum
+                    ready_queue.append(process)
+                else:
+                    self.current_time += process.bt
+                    process.tat = self.current_time - process.at
+                    process.wt = process.tat - process.bt
+                    yield self.env.timeout(process.bt)
+            else:
+                self.current_time += 1  # Idle CPU time
 
-    def state(self):
-        print("Pid\tBt\tAt\tTat\tWt\tCompleted")
-        for p in self.processList:
-            print(f"{p.pid}\t{p.bt}\t{p.at}\t{p.tat}\t{p.wt}\t{p.completed}")
+
