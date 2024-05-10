@@ -42,6 +42,7 @@ def main():
      
     print("\nIndividual  Process Non-Modified Results:")
     print("Level\tPid\tBt\tAt\tTat\tWt")
+
     for p in processes:
         level = ""
         if p in real_time_processes:
@@ -66,13 +67,13 @@ def main():
     print("Level\tPid\tBt\tAt\tTat\tWt")
     for p in processes:
         level = ""
-        if p in real_time_processes:
+        if p in real_time_processes and real_time_processes:
             level = "Real-Time"
-        elif p in interactive_processes:
+        elif p in interactive_processes and interactive_processes:
             level = "Interactive"
-        elif p in system_processes:
+        elif p in system_processes and system_processes:
             level = "System"
-        elif p in batch_processes:
+        elif p in batch_processes and batch_processes:
             level = "Batch"
         print(f"{level.ljust(12)}{p.pid}\t{p.bt}\t{p.at}\t{p.tat}\t{max(0, p.wt)}")  # Adjusted for negative waiting time
 
@@ -88,6 +89,7 @@ def main():
     }
     
     for queue, processes_in_queue in queues.items():
+     if(processes_in_queue):
         total_waiting_time = sum(max(0, p.wt) for p in processes_in_queue)  # Adjusted for negative waiting time
         total_turnaround_time = sum(p.tat for p in processes_in_queue)
         total_completion_time = sum(p.at + p.tat for p in processes_in_queue)
