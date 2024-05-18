@@ -1,4 +1,3 @@
-
 import random
 import simpy
 from process import Process
@@ -110,9 +109,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    
-
 
 
 
