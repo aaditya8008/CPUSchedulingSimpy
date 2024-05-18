@@ -53,7 +53,7 @@ def main():
         print(f"{level.ljust(12)}\t{p.pid}\t{p.bt}\t{p.at}\t{p.tat}\t{max(0, p.wt)}")
 
     def run_schedulers(env, psjf_scheduler, round_robin_scheduler, sjf_scheduler, fcfs_scheduler):
-        print("PSJF started at:", env.now)
+        print("\nPSJF started at:", env.now)
         yield env.process(psjf_scheduler.run())
         print("PSJF ended at:", env.now)
         
