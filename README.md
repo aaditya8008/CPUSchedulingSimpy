@@ -33,8 +33,7 @@ cd CPUSchedulingSimpy
 Run the program:
 
 python main.py
-git clone https://github.com/aaditya8008/CPUSchedulingSimpy.git
-cd CPUSchedulingSimpy
+
 
 ## 🚀 Algorithms Covered
 
